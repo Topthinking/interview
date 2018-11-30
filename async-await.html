@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const data = (param = 0) =>
+        new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(param + 1);
+          });
+        });
+
+      class Async {
+        constructor(cb) {
+          this.obj = {
+            start: 1,
+            value: undefined,
+            stop: () =>
+              Promise.resolve().then(() => {
+                this.stop = true;
+              }),
+          };
+          this.stop = false;
+          this.thenCbs = [];
+          this.start(cb).then((data) => {
+            this.thenCbs.map((item) => {
+              item(data);
+            });
+          });
+        }
+
+        start(cb) {
+          return new Promise((resolve) => {
+            if (this.stop) {
+              resolve(this.obj.value);
+            }
+            const self = this;
+            function core(cb) {
+              cb.call(this).then((data) => {
+                if (!self.stop) {
+                  this.value = data;
+                  core.call(this, cb);
+                } else {
+                  resolve(this.value);
+                }
+              });
+            }
+            core.call(this.obj, cb);
+          });
+        }
+
+        then(thenCb) {
+          this.thenCbs.push(thenCb);
+        }
+      }
+
+      new Async(function() {
+        switch (this.start) {
+          case 1:
+            this.start = 2;
+            return data(0);
+            break;
+
+          case 2:
+            this.start = 3;
+            return data(this.value);
+
+          case 3:
+            this.start = 4;
+            return data(this.value);
+
+          default:
+            return this.stop();
+            break;
+        }
+      }).then((data) => {
+        console.log('异步执行结果', data);
+      });
+    </script>
+  </body>
+</html>
