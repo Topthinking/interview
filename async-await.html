@@ -59,6 +59,15 @@
         }
       }
 
+      /**
+       * async()=>{
+       *   let a = await data(0)
+       *   a = await data(a)
+       *   a = await data(a)
+       *   return a
+       * }
+       *
+       */
       new Async(function() {
         switch (this.start) {
           case 1:
