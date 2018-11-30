@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // Promise
+      class Promise {
+        constructor(fun) {
+          this.state = 'pendding';
+          if (typeof fun !== 'function') {
+            throw new Error('构造函数必须传回调');
+          }
+          this.resolveData = undefined;
+          this.rejectData = undefined;
+          this.thens = [];
+          this.catchs = [];
+          fun(this.resolve.bind(this), this.reject.bind(this));
+        }
+
+        resolve(data) {
+          this.resolveData = data;
+          this.state = 'resolved';
+          this.runThen();
+        }
+
+        reject(data) {
+          this.rejectData = data;
+          this.state = 'rejected';
+          this.runCatch();
+        }
+
+        then(cb) {
+          if (typeof cb !== 'function') {
+            throw new Error('then必须接受函数');
+          }
+          if (this.state === 'resolved') {
+            cb();
+          }
+
+          if (this.state === 'pendding') {
+            this.thens.push(cb);
+          }
+          return this;
+        }
+
+        catch(cb) {
+          if (typeof cb !== 'function') {
+            throw new Error('catch必须接受函数');
+          }
+          if (this.state === 'rejected') {
+            cb();
+          }
+
+          if (this.state === 'pendding') {
+            this.catchs.push(cb);
+          }
+          return this;
+        }
+
+        runThen() {
+          for (let i = 0; i < this.thens.length; i++) {
+            try {
+              this.resolveData = this.thens[i](this.resolveData);
+            } catch (error) {
+              this.state = 'rejected';
+              console.log(11, error);
+              this.rejectData = error;
+              this.runCatch();
+              break;
+            }
+          }
+        }
+
+        runCatch() {
+          for (let i = 0; i < this.catchs.length; i++) {
+            try {
+              this.rejectData = this.catchs[i](this.rejectData);
+            } catch (error) {
+              this.state = 'rejected';
+              if (i === this.catchs.length - 1) {
+                throw new Error(`Uncaught (in promise) ` + error);
+              } else {
+                this.rejectData = error;
+                continue;
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script>
+      // 链式调用Promise
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      }).then(() => {
+        console.log('执行成功');
+      });
+
+      // 引用
+      const data = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      });
+
+      data.then(() => {
+        return 1;
+      });
+
+      data.then((data) => {
+        console.log(data);
+      });
+
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject();
+        }, 1000);
+      })
+        .then(() => {
+          console.log('执行成功');
+        })
+        .catch(() => {
+          console.log('执行失败');
+        });
+
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      })
+        .then(() => {
+          return 1;
+        })
+        .then((data) => {
+          console.log('第二个then', data);
+          throw '这是个错误';
+        })
+        .catch((err) => {
+          console.log('执行失败', err);
+        });
+
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject();
+        }, 1000);
+      })
+        .catch((err) => {
+          console.log('捕获第一个错误', err);
+          throw '抛出第二个错误';
+        })
+        .catch((err) => {
+          console.log('捕获第二个错误', err);
+          throw '抛出第三个错误';
+        });
+    </script>
+  </body>
+</html>
