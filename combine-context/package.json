@@ -1,0 +1,26 @@
+{
+  "name": "combinecontext-demo",
+  "version": "1.0.0",
+  "description": "合并多个context的高阶组件",
+  "keywords": [],
+  "main": "src/index.js",
+  "dependencies": {
+    "hoist-non-react-statics": "3.3.0",
+    "react": "16.8.3",
+    "react-dom": "16.8.3",
+    "react-scripts": "2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
