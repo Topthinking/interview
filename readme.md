@@ -13,15 +13,15 @@
 - combine-context
 
   ```shell
-	# 解压后 node_modules在里面，直接运行即可
 	$ cd combine-context
+	$ npm install 
 	$ npm start
 	```
 
 - hmr-middleware
 
   ```shell
-	# 解压后 node_modules在里面，直接运行即可
 	$ cd hmr-middleware
+	$ npm install 
 	$ node server.js
 	```
