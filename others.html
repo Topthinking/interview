@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <script>
+        const fun = (a, b = false) => !b ? (c = 0) => fun(parseInt(a) + parseInt(c), c === 0) :
+            a;
+        // 实现类似 fun(1)(2)() = 3
+    </script>
+</body>
+</html>
